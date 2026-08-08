@@ -1,0 +1,90 @@
+[
+  {
+    "day": 1,
+    "title": "Foundations of LLMs, Tokenization & Context Windows",
+    "type": "core",
+    "tools": ["Tiktoken", "HuggingFace Transformers", "SentencePiece"],
+    "learning_objectives": [
+      "Understand BPE tokenization and subword splitting behavior",
+      "Analyze context window limits and memory overhead per token",
+      "Calculate key-value cache memory requirements for long prompts"
+    ]
+  },
+  {
+    "day": 4,
+    "title": "Prompt Engineering, System Instructions & Structured Outputs",
+    "type": "core",
+    "tools": ["Gemini API", "Pydantic", "Instructor", "JSON Schema"],
+    "learning_objectives": [
+      "Enforce deterministic JSON response formats with schema validation",
+      "Apply few-shot prompting and system instruction guardrails",
+      "Handle JSON truncation, parsing errors, and automatic retries"
+    ]
+  },
+  {
+    "day": 8,
+    "title": "Embeddings, Vector Databases & Semantic Search",
+    "type": "core",
+    "tools": ["ChromaDB", "pgvector", "Qdrant", "OpenAI Embeddings"],
+    "learning_objectives": [
+      "Compare cosine similarity, dot product, and Euclidean distance metrics",
+      "Design document chunking strategies (hierarchical, overlapping, semantic)",
+      "Optimize HNSW vector index parameters for recall vs query latency"
+    ]
+  },
+  {
+    "day": 12,
+    "title": "Retrieval-Augmented Generation (RAG) Architecture",
+    "type": "advanced",
+    "tools": ["LangChain", "LlamaIndex", "Cross-Encoder Rerankers"],
+    "learning_objectives": [
+      "Implement hybrid retrieval combining BM25 keyword and dense vector search",
+      "Apply Cross-Encoder re-ranking to prune irrelevant retrieved chunks",
+      "Mitigate model hallucinations using grounded context verification"
+    ]
+  },
+  {
+    "day": 16,
+    "title": "AI Agents, Tool Calling & Function Execution",
+    "type": "advanced",
+    "tools": ["Gemini Tool Calling", "FastAPI", "OpenAPI Schemas"],
+    "learning_objectives": [
+      "Define OpenAPI function declarations for LLM tool invocation",
+      "Handle parallel tool calls, execution errors, and step-back retry loops",
+      "Prevent recursive infinite loops and manage agent execution state"
+    ]
+  },
+  {
+    "day": 20,
+    "title": "Fine-Tuning & Parameter-Efficient Fine-Tuning (PEFT)",
+    "type": "advanced",
+    "tools": ["LoRA", "QLoRA", "Unsloth", "PyTorch", "TRL"],
+    "learning_objectives": [
+      "Understand Low-Rank Adaptation (LoRA) decomposition rank (r) and alpha",
+      "Format instruction datasets into chat templates (ChatML / Alpaca)",
+      "Evaluate VRAM savings and training tradeoffs of 4-bit QLoRA quantization"
+    ]
+  },
+  {
+    "day": 25,
+    "title": "LLM Evaluation, Benchmarking & Safety Guardrails",
+    "type": "capstone",
+    "tools": ["Ragas", "DeepEval", "Guardrails AI", "NeMo Guardrails"],
+    "learning_objectives": [
+      "Measure RAG performance using Faithfulness, Answer Relevance, and Context Precision",
+      "Implement LLM-as-a-Judge pipelines with bias mitigation",
+      "Enforce input/output PII masking and toxicity classifiers"
+    ]
+  },
+  {
+    "day": 30,
+    "title": "Production Deployment, Caching & Cost Optimization",
+    "type": "capstone",
+    "tools": ["vLLM", "Triton Inference Server", "Semantic Cache", "Redis"],
+    "learning_objectives": [
+      "Configure PagedAttention and KV-cache quantization in vLLM",
+      "Implement semantic caching to reduce repetitive API costs",
+      "Benchmark Time-To-First-Token (TTFT) and token generation throughput"
+    ]
+  }
+]

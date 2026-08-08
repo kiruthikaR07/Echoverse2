@@ -1,0 +1,6 @@
+{
+  "name": "Adaptive AI Interviewer",
+  "description": "Adaptive technical interview agent for enterprise AI engineering candidates.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

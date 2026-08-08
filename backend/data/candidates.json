@@ -1,0 +1,86 @@
+[
+  {
+    "id": "candidate_101",
+    "name": "Alex Rivera",
+    "role": "Senior Backend Engineer (Transitioning to Enterprise AI)",
+    "experience": "5 years Python, FastAPI, Microservices",
+    "completed_missions": [1, 4, 8, 12, 16],
+    "skipped_missions": [20],
+    "failed_missions": [25],
+    "attempts": {
+      "1": 1,
+      "4": 1,
+      "8": 2,
+      "12": 1,
+      "16": 2,
+      "25": 2
+    },
+    "learning_signals": {
+      "strengths": [
+        "Strong async FastAPI architecture and clean API design",
+        "Proficient in structured output parsing with Pydantic",
+        "Solid grasp of basic RAG pipeline design"
+      ],
+      "gaps": [
+        "Struggled with LLM-as-a-Judge evaluation metrics on Day 25 mission",
+        "Skipped PEFT / LoRA math module (Day 20)",
+        "Needed multiple attempts on vector index tuning (Day 8)"
+      ]
+    }
+  },
+  {
+    "id": "candidate_102",
+    "name": "Priya Sharma",
+    "role": "ML Research Engineer",
+    "experience": "3 years PyTorch, HuggingFace, Model Training",
+    "completed_missions": [1, 4, 8, 20, 25],
+    "skipped_missions": [12, 16],
+    "failed_missions": [],
+    "attempts": {
+      "1": 1,
+      "4": 1,
+      "8": 1,
+      "20": 1,
+      "25": 1
+    },
+    "learning_signals": {
+      "strengths": [
+        "Deep technical understanding of LoRA matrix decomposition and VRAM math",
+        "Strong knowledge of evaluation metrics and benchmark design",
+        "Solid understanding of tokenization and transformer architecture"
+      ],
+      "gaps": [
+        "Skipped RAG architecture (Day 12) and Agent tool calling (Day 16)",
+        "Less experience with web service integrations and REST API wrappers"
+      ]
+    }
+  },
+  {
+    "id": "candidate_103",
+    "name": "Jordan Chen",
+    "role": "Full-Stack AI Application Developer",
+    "experience": "4 years React, Node, Python, Cloud Deployment",
+    "completed_missions": [1, 4, 12, 16, 30],
+    "skipped_missions": [8, 20],
+    "failed_missions": [],
+    "attempts": {
+      "1": 1,
+      "4": 1,
+      "12": 1,
+      "16": 1,
+      "30": 1
+    },
+    "learning_signals": {
+      "strengths": [
+        "Excellent practical execution on production deployment & semantic caching (Day 30)",
+        "Proficient with Agent tool calling and OpenAPI schema definitions",
+        "Strong UI/UX for LLM interactions"
+      ],
+      "gaps": [
+        "Skipped Vector Database indexing theory (Day 8)",
+        "Skipped PEFT fine-tuning concepts (Day 20)",
+        "Relies heavily on framework abstractions without deep internal math"
+      ]
+    }
+  }
+]
