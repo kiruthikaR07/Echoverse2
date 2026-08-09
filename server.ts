@@ -69,6 +69,10 @@ async function forwardToPython(reqPath: string, method: string, body?: any) {
 }
 
 // API Routes
+app.get("/health", async (req, res) => {
+  res.json({ status: "ok" });
+});
+
 app.get("/api/health", async (req, res) => {
   try {
     const data = await forwardToPython("/api/health", "GET");

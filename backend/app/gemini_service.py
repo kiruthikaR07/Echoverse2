@@ -96,7 +96,7 @@ def _call_gemini(
             except urllib.error.HTTPError as e:
                 err_msg = e.read().decode("utf-8")
                 last_exception = e
-                if e.code == 429: # Rate limit, brief pause then retry
+                if e.code in [429, 500, 502, 503, 504]: # Rate limit or temporary service issue, brief pause and retry
                     import time
                     time.sleep(1.5 * (attempt + 1))
                     continue

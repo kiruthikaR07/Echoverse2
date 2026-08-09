@@ -48,6 +48,10 @@ try:
         allow_headers=["*"],
     )
 
+    @app.get("/health")
+    def health_root():
+        return {"status": "ok"}
+
     @app.get("/api/health")
     def health_check():
         return {"status": "ok", "service": "adaptive-ai-interviewer"}
@@ -74,69 +78,95 @@ try:
             print(f"Error processing interview turn: {str(e)}")
             raise HTTPException(status_code=500, detail=str(e))
 
+    # Mount static files from dist if built
+    DIST_DIR = os.path.join(BASE_DIR, "dist")
+    if os.path.exists(DIST_DIR):
+        from fastapi.staticfiles import StaticFiles
+        from fastapi.responses import FileResponse
+
+        assets_dir = os.path.join(DIST_DIR, "assets")
+        if os.path.exists(assets_dir):
+            app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
+        @app.get("/{full_path:path}")
+        def serve_spa(full_path: str):
+            if full_path.startswith("api/") or full_path == "health":
+                raise HTTPException(status_code=404, detail="Not Found")
+            file_path = os.path.join(DIST_DIR, full_path)
+            if os.path.exists(file_path) and os.path.isfile(file_path):
+                return FileResponse(file_path)
+            return FileResponse(os.path.join(DIST_DIR, "index.html"))
+
 except ImportError:
     app = None
 
 
-# Standalone Standard Library HTTP Server Fallback
+# Standalone / Railway Execution
 if __name__ == "__main__":
-    import http.server
-    import socketserver
+    PORT = int(os.environ.get("PYTHON_PORT") or os.environ.get("PORT") or "8000")
     
-    PORT = int(os.environ.get("PYTHON_PORT", "8000"))
-    
-    class InterviewHTTPHandler(http.server.BaseHTTPRequestHandler):
-        def _send_json(self, status: int, payload: Any):
-            self.send_response(status)
-            self.send_header("Content-Type", "application/json")
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-            self.send_header("Access-Control-Allow-Headers", "Content-Type")
-            self.end_headers()
-            self.wfile.write(json.dumps(payload).encode("utf-8"))
+    try:
+        import uvicorn
+        print(f"Starting FastAPI server with Uvicorn on port {PORT}...")
+        uvicorn.run("backend.app.main:app", host="0.0.0.0", port=PORT, reload=False)
+    except Exception as err:
+        print(f"Uvicorn start fallback to HTTPServer due to: {err}")
+        import http.server
+        import socketserver
 
-        def do_OPTIONS(self):
-            self.send_response(200)
-            self.send_header("Access-Control-Allow-Origin", "*")
-            self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
-            self.send_header("Access-Control-Allow-Headers", "Content-Type")
-            self.end_headers()
+        class InterviewHTTPHandler(http.server.BaseHTTPRequestHandler):
+            def _send_json(self, status: int, payload: Any):
+                self.send_response(status)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+                self.send_header("Access-Control-Allow-Headers", "Content-Type")
+                self.end_headers()
+                self.wfile.write(json.dumps(payload).encode("utf-8"))
 
-        def log_message(self, format, *args):
-            sys.stdout.write("%s - - [%s] %s\n" % (self.address_string(), self.log_date_time_string(), format % args))
-            sys.stdout.flush()
+            def do_OPTIONS(self):
+                self.send_response(200)
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+                self.send_header("Access-Control-Allow-Headers", "Content-Type")
+                self.end_headers()
 
-        def do_GET(self):
-            if self.path == "/api/health":
-                self._send_json(200, {"status": "ok", "service": "adaptive-ai-interviewer"})
-            elif self.path == "/api/candidates":
-                self._send_json(200, get_candidates())
-            elif self.path == "/api/curriculum":
-                self._send_json(200, get_curriculum())
-            else:
-                self._send_json(404, {"error": "Not Found"})
+            def log_message(self, format, *args):
+                sys.stdout.write("%s - - [%s] %s\n" % (self.address_string(), self.log_date_time_string(), format % args))
+                sys.stdout.flush()
 
-        def do_POST(self):
-            if self.path == "/api/interview":
-                content_length = int(self.headers.get("Content-Length", 0))
-                body = self.rfile.read(content_length).decode("utf-8")
-                try:
-                    data = json.loads(body)
-                    session_id = data.get("sessionId", "session_default")
-                    candidate = data.get("candidate", {})
-                    messages = data.get("messages", [])
-                    
-                    res = process_interview_turn(session_id, candidate, messages)
-                    self._send_json(200, res)
-                except Exception as e:
-                    print(f"Server Error: {str(e)}")
-                    self._send_json(500, {"error": str(e)})
-            else:
-                self._send_json(404, {"error": "Not Found"})
+            def do_GET(self):
+                if self.path in ["/health", "/api/health"]:
+                    self._send_json(200, {"status": "ok", "service": "adaptive-ai-interviewer"})
+                elif self.path == "/api/candidates":
+                    self._send_json(200, get_candidates())
+                elif self.path == "/api/curriculum":
+                    self._send_json(200, get_curriculum())
+                else:
+                    self._send_json(404, {"error": "Not Found"})
 
-    class ThreadedHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
-        daemon_threads = True
+            def do_POST(self):
+                if self.path == "/api/interview":
+                    content_length = int(self.headers.get("Content-Length", 0))
+                    body = self.rfile.read(content_length).decode("utf-8")
+                    try:
+                        data = json.loads(body)
+                        session_id = data.get("sessionId", "session_default")
+                        candidate = data.get("candidate", {})
+                        messages = data.get("messages", [])
+                        
+                        res = process_interview_turn(session_id, candidate, messages)
+                        self._send_json(200, res)
+                    except Exception as e:
+                        print(f"Server Error: {str(e)}")
+                        self._send_json(500, {"error": str(e)})
+                else:
+                    self._send_json(404, {"error": "Not Found"})
 
-    print(f"Starting Python HTTP Interview Service on port {PORT}...")
-    with ThreadedHTTPServer(("0.0.0.0", PORT), InterviewHTTPHandler) as httpd:
-        httpd.serve_forever()
+        class ThreadedHTTPServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
+            daemon_threads = True
+
+        print(f"Starting Python HTTP Interview Service on port {PORT}...")
+        with ThreadedHTTPServer(("0.0.0.0", PORT), InterviewHTTPHandler) as httpd:
+            httpd.serve_forever()
+
